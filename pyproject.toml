@@ -30,7 +30,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = ["cx_Oracle", "oracledb", "pandas", "pyodbc",  "requests", "sqlalchemy"]
 
 [project.urls]
 Documentation = "https://github.com/clin94118/ccsf-con#readme"

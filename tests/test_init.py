@@ -1,14 +1,11 @@
 import pytest
-from ccsf_con import f_print_time, f_split_df, DB_LOGIN
+from ccsf_con import f_print_time, f_split_df
 from datetime import datetime
 import pandas as pd
 
 @pytest.fixture
 def my_df():
     return pd.DataFrame({"foo_id": [1, 2, 3, 4, 5, 6]})
-
-def test_login_file():
-    assert DB_LOGIN.l_OCI_usr == 'baninst1'
 
 def test_f_print_time():
     assert f_print_time() == datetime.now().strftime("%Y-%m-%d %H:%M:%S")

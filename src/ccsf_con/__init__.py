@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 # base imports
+import json
 import os
 import sys
 import time
@@ -10,10 +11,10 @@ from datetime import datetime, timedelta
 # required imports
 from sqlalchemy import create_engine, text
 import pandas as pd
-import pyodbc
 import oracledb
-import cx_Oracle
 import requests
+from cryptography.fernet import Fernet
+from ccsf_con import oracledb_con as oracledb_con
 
 def f_print_time():
     """current date string with time
@@ -36,14 +37,3 @@ def f_split_df(in_df, in_nGrp):
     list_df = [in_df[i:i+in_nGrp] for i in range(0, l_numReq, in_nGrp)]
 
     return list_df
-
-
-
-# import login information
-if sys.platform == 'linux':
-    l_login_path = '/home/' + os.getlogin() + '/.logins'
-else:
-    l_login_path = 'c:/Users/' + os.getlogin() + '/.logins'
-
-sys.path.append(l_login_path)
-import DB_LOGIN, IPQS_LOGIN

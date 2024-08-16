@@ -20,9 +20,9 @@ pip install ccsf-con
 
 ## Processes
 ### Base Functions
-* f_create_wString(in_str)
-* f_print_time()
-* f_split_df(in_df, in_nGrp)
+* f_create_wString(in_str) -- convert list of string into filter for sql statement ('a', 'b', 'c', ...)
+* f_print_time() -- print current time in format "%Y-%m-%d %H:%M:%S"
+* f_split_df(in_df, in_nGrp) -- split dataframe into list of nGrp size dataframes 
 
 ### submodules
 * oracledb_con

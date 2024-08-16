@@ -13,15 +13,15 @@ DB_JSON_FILE_VER_SUPPORTED = "1.01"
 
 class OracleCloudDB:
     """
-    A class to manage Oracle Cloud database operations, including connecting, creating tables,
-    querying data, updating data, deleting data, and executing arbitrary SQL queries.
+    A class to manage Oracle Cloud database operations, including connecting to the database,
+    executing SQL queries, and closing the connection.
 
-    In order to connect to Oracle OCI database using SSL, Oracle client libraries should be
-    installed on the host that initiates the connection to the database. For more details,
-    visit https://www.oracle.com/database/technologies/instant-client.html. More details can
-    be found at https://www.oracle.com/database/technologies/appdev/python/quickstartpython.html
-    The directory path where Oracle client libraries are installed. For detail, please visit
-    https://python-oracledb.readthedocs.io/en/latest/user_guide/installation.html#installing-python-oracledb-on-windows
+    This class requires Oracle client libraries to be installed on the host that initiates
+    the connection. For more details, refer to the Oracle documentation:
+    - Instant Client: https://www.oracle.com/database/technologies/instant-client.html
+    - Python oracledb module: https://www.oracle.com/database/technologies/appdev/python/quickstartpython.html
+    - Installation guide: https://python-oracledb.readthedocs.io/en/latest/user_guide/installation.html
+
     """
 
     def __init__(self):
@@ -36,7 +36,7 @@ class OracleCloudDB:
 
     def _decrypt_password(self, encrypted_password, crytokey):
         """
-        Decrypt the password using the provided crytokey.
+        Decrypt the password using the provided cryptographic key.
 
         Parameters:
         encrypted_password (str): The encrypted password.
@@ -59,9 +59,9 @@ class OracleCloudDB:
         """
         Establish a connection to the Oracle Cloud database using parameters from a JSON file.
 
-        This method first searches for the DB_OCI_CONNECTIONS_FILE file in the current directory.
-        If the file is not found, it then searches in the user's home directory. If the file
-        is not found in either location, a FileNotFoundError is raised.
+        This method searches for the DB_OCI_CONNECTIONS_FILE file in the current directory,
+        and if not found, in the user's home directory. If the file is not found in either
+        location, a FileNotFoundError is raised.
 
         Parameters:
         connection_name (str): The name of the connection to use from the DB_OCI_CONNECTIONS_FILE file.
@@ -71,7 +71,7 @@ class OracleCloudDB:
         Raises:
         FileNotFoundError: If the DB_OCI_CONNECTIONS_FILE file is not found in the current or home directory.
         ValueError: If the specified connection name is not found in the JSON file.
-        ValueError: If the version of the JSON file is not DB_JSON_FILE_VER_SUPPORTED.
+        ValueError: If the version of the JSON file is not supported by the class.
         oracledb.DatabaseError: If a database connection error occurs and the retries are exhausted.
         """
         # Set the JSON file path to the current working directory
@@ -112,7 +112,7 @@ class OracleCloudDB:
         if not conn_details:
             raise ValueError(f"Connection '{connection_name}' not found in {json_file_path}")
 
-        # Decrypt the password using the crytokey
+        # Decrypt the password using the cryptographic key if available
         crytokey = conn_details.get('crytokey')
         if crytokey:
             encrypted_password = conn_details['password']
@@ -122,10 +122,12 @@ class OracleCloudDB:
             self.password = conn_details['password']
             print("Using plain password from JSON file.")
 
+        # Construct the DSN (Data Source Name) for the connection
         self.dsn = oracledb.makedsn(host=conn_details['hostname'], port=conn_details['port'],
                                     service_name=conn_details['serviceName'])
         self.username = conn_details['user']
 
+        # Attempt to connect with retry logic
         for attempt in range(retries):
             try:
                 self.connection = oracledb.connect(

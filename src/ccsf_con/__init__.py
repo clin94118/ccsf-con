@@ -16,6 +16,18 @@ import requests
 from cryptography.fernet import Fernet
 from ccsf_con import oracledb_con as oracledb_con
 
+
+def f_create_wString(in_serStr):
+    """series of string converted to filter for sql in statement ('a', 'b', 'c', ...)
+
+    :param in_serStr: string series
+    :return: string matching filter in statement
+    """
+    return_val = "('" + "', '".join(in_serStr) + "')"
+
+    return return_val
+
+
 def f_print_time():
     """current date string with time
 
@@ -34,6 +46,6 @@ def f_split_df(in_df, in_nGrp):
     :return: list_df: list of dataframes
     """
     l_numReq = in_df.shape[0]
-    list_df = [in_df[i:i+in_nGrp] for i in range(0, l_numReq, in_nGrp)]
+    list_df = [in_df[i:i + in_nGrp] for i in range(0, l_numReq, in_nGrp)]
 
     return list_df

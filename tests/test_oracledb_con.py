@@ -8,7 +8,7 @@ def in_inst():
 
 def test_connect_query(in_inst):
     my_db = oracledb_con.OracleCloudDB()
-    my_db.connect("OCI_PPRD")
+    my_db.connect(in_inst)
 
     my_sql = """
         select * from spriden where spriden_id = :id
@@ -19,7 +19,7 @@ def test_connect_query(in_inst):
 def test_close_connection(in_inst):
     try:
         my_db = oracledb_con.OracleCloudDB()
-        my_db.connect("OCI_PPRD")
+        my_db.connect(in_inst)
 
         my_db.close_connection()
     except Exception as err:

@@ -1,5 +1,5 @@
 import pytest
-from ccsf_con import f_print_time, f_split_df
+from ccsf_con import f_print_time, f_split_df, f_create_wString
 from datetime import datetime
 import pandas as pd
 
@@ -20,3 +20,8 @@ def test_f_split_df(my_df):
 
     for i in range(len(test_grp)):
         pd.testing.assert_frame_equal(test_grp[i], verify_grp[i])
+
+def test_f_create_wString(my_df):
+    gen_list = list(my_df.foo_id.astype(str))
+    wString = f_create_wString(gen_list)
+    assert wString == "('1', '2', '3', '4', '5', '6')"

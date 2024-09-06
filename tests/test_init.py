@@ -1,5 +1,5 @@
 import pytest
-from ccsf_con import f_print_time, f_split_df, f_create_wString
+from ccsf_con import f_print_time, f_split_df, f_create_wString, get_login
 from datetime import datetime
 import pandas as pd
 
@@ -25,3 +25,11 @@ def test_f_create_wString(my_df):
     gen_list = list(my_df.foo_id.astype(str))
     wString = f_create_wString(gen_list)
     assert wString == "('1', '2', '3', '4', '5', '6')"
+
+def test_get_login():
+    conns = get_login('.DbConnections.json', '1.01', True)
+    con_df = pd.DataFrame.from_dict(conns.get('connections'), orient="columns")
+
+    l_filter = con_df["name"] == 'OCI_PPRD'
+    assert len(con_df[l_filter]) > 0
+

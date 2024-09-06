@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ccsf-con"
-version = "0.5"
+version = "0.52"
 description = """
   Python package with common functions and procedures for developers
 """

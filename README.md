@@ -20,6 +20,7 @@ pip install ccsf-con
 
 ## Processes
 ### Base Functions
+* get_login(in_file, in_ver, debug = False) -- take json file and return list of dictionaries with data
 * f_create_wString(in_str) -- convert list of string into filter for sql statement ('a', 'b', 'c', ...)
 * f_print_time() -- print current time in format "%Y-%m-%d %H:%M:%S"
 * f_split_df(in_df, in_nGrp) -- split dataframe into list of nGrp size dataframes 

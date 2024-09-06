@@ -6,7 +6,7 @@ import pandas as pd
 from pathlib import Path
 from cryptography.fernet import Fernet
 from codetiming import Timer
-
+from ccsf_con import get_login
 # Global variables
 DB_OCI_CONNECTIONS_FILE = '.DbConnections.json'
 DB_JSON_FILE_VER_SUPPORTED = "1.01"
@@ -75,40 +75,18 @@ class OracleCloudDB:
         ValueError: If the version of the JSON file is not supported by the class.
         oracledb.DatabaseError: If a database connection error occurs and the retries are exhausted.
         """
-        # Set the JSON file path to the current working directory
-        json_file_path = Path.cwd() / DB_OCI_CONNECTIONS_FILE
-
-        # If not found, search in the user's home directory
-        if not json_file_path.is_file():
-            json_file_path = Path.home() / '.logins' /DB_OCI_CONNECTIONS_FILE
-
-        # If the JSON file is still not found, raise an error
-        if not json_file_path.is_file():
-            raise FileNotFoundError(
-                f"JSON file '{DB_OCI_CONNECTIONS_FILE}' not found in the current directory or home directory.")
-        else:
-            # Print the file path before opening it
-            print(f"Using JSON file path: {json_file_path}")
-
-        # Load connection details from JSON file
-        with json_file_path.open('r') as f:
-            config = json.load(f)
-
-        # Check the version
-        if config.get('version') != DB_JSON_FILE_VER_SUPPORTED:
-            raise ValueError(
-                f"Unsupported JSON version: {config.get('version')}. Expected version '{DB_JSON_FILE_VER_SUPPORTED}'.")
+        config = get_login(DB_OCI_CONNECTIONS_FILE, DB_JSON_FILE_VER_SUPPORTED)
 
         if 'instclientpath' in config:
             oracledb.init_oracle_client(lib_dir=config['instclientpath'])
             print(f"Oracle client initialized with libraries from: {config['instclientpath']}")
 
+        conn_df = pd.DataFrame.from_dict(config.get('connections'), orient="columns")
+
         # Find the connection details by name
-        conn_details = None
-        for conn in config['connections']:
-            if conn['name'] == connection_name:
-                conn_details = conn['info']
-                break
+        l_filter = conn_df.name == connection_name
+        conn_df = conn_df[l_filter]
+        conn_details = conn_df['info'].values[0]
 
         if not conn_details:
             raise ValueError(f"Connection '{connection_name}' not found in {json_file_path}")

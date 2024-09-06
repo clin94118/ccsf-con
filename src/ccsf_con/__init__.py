@@ -7,6 +7,7 @@ import os
 import sys
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 
 # required imports
 from sqlalchemy import create_engine, text
@@ -14,7 +15,49 @@ import pandas as pd
 import oracledb
 import requests
 from cryptography.fernet import Fernet
-from ccsf_con import oracledb_con as oracledb_con
+
+def export_csv(df):
+    with io.StringIO() as buffer:
+        df.to_csv(buffer, index=False, encoding='utf-8')
+        return buffer.getvalue()
+
+EXPORTERS = {'dataframe.csv': export_csv}
+
+def get_login(in_file, in_ver, debug = False):
+    """
+    Retrieve login from JSON file
+
+    Parameters:
+    in_file (str): filename of login file
+    in_ver (str): version matching required
+    debug (bool, optional): prints json file path
+    Returns:
+    list of dictionaries containing login details
+
+    Raises:
+    FileNotFoundError: The file is not found in current working directory or home/.logins directory
+    ValueError: Version in file does not match requirement
+    """
+    json_file_path = Path.cwd() / in_file
+
+    if not json_file_path.is_file():
+        json_file_path = Path.home() / '.logins' / in_file
+
+    if not json_file_path.is_file():
+        raise FileNotFoundError(
+            f"JSON file '{in_file}' not found in the current directory or home/.logins directory.")
+    else:
+        # Print the file path before opening it
+        if debug:
+            print(f"Using JSON file path: {json_file_path}")
+
+    with json_file_path.open('r') as json_file:
+        config = json.load(json_file)
+
+    if config.get('version') != in_ver:
+        raise ValueError(f"Unsupported JSON version: {config.get('version')}. Expected version '{in_ver}'.")
+
+    return config
 
 
 def f_create_wString(in_serStr):

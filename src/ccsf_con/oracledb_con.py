@@ -5,6 +5,7 @@ import oracledb
 import pandas as pd
 from pathlib import Path
 from cryptography.fernet import Fernet
+from codetiming import Timer
 
 # Global variables
 DB_OCI_CONNECTIONS_FILE = '.DbConnections.json'
@@ -145,7 +146,7 @@ class OracleCloudDB:
                 else:
                     print(f"Failed to connect after {retries} attempts.")
                     raise
-
+    @Timer()
     def execute_sql(self, sql, params=None):
         """
         Execute an arbitrary SQL query in the connected Oracle Cloud database.

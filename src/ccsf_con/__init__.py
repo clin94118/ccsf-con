@@ -15,6 +15,7 @@ import pandas as pd
 import oracledb
 import requests
 from cryptography.fernet import Fernet
+import configparser
 
 def export_csv(df):
     with io.StringIO() as buffer:
@@ -22,6 +23,32 @@ def export_csv(df):
         return buffer.getvalue()
 
 EXPORTERS = {'dataframe.csv': export_csv}
+
+def get_with_default(in_conf, in_section, in_key, default=None):
+    """
+    Retrieve configuration values from INI file
+
+    Parameters:
+    in_conf (str): loaded configparser
+    in_section (str): section header
+    in_key (str): key of entry
+    default (obj): default value if section/key is not found
+    Returns:
+    string value retrieved using section and key parameters
+    """
+
+    return_val = default
+
+    try:
+        return_val = in_conf.get(in_section, in_key)
+    except configparser.NoOptionError:
+        print(f"No such option: {in_key}")
+    except configparser.NoSectionError:
+        print(f"No such section: {in_section}")
+    finally:
+        return return_val
+
+
 
 def get_login(in_file, in_ver, debug = False):
     """

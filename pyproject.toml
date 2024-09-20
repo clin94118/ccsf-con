@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ccsf-con"
-version = "0.52"
+version = "0.6"
 description = """
   Python package with common functions and procedures for developers
 """
@@ -30,7 +30,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["oracledb", "pandas", "pytest",  "requests", "sqlalchemy", "codetiming"]
+dependencies = ["oracledb", "pandas", "pytest",  "requests", "sqlalchemy", "codetiming", "configparser"]
 
 [project.urls]
 Documentation = "https://github.com/clin94118/ccsf-con#readme"

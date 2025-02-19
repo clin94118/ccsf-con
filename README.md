@@ -20,6 +20,8 @@ pip install ccsf-con
 
 ## Processes
 ### Base Functions
+* debug_print(in_message) -- print based on G_DEBUG_FLAG
+* get_with_default(in_conf, in_section, in_key, default = None) -- retrieve values from an INI file
 * get_login(in_file, in_ver, debug = False) -- take json file and return list of dictionaries with data
 * f_create_wString(in_str) -- convert list of string into filter for sql statement ('a', 'b', 'c', ...)
 * f_print_time() -- print current time in format "%Y-%m-%d %H:%M:%S"

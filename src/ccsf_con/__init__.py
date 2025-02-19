@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 # base imports
+import io
 import json
 import os
 import sys
@@ -17,12 +18,27 @@ import requests
 from cryptography.fernet import Fernet
 import configparser
 
+# Global debug flag (turn debug messages on/off)
+G_DEBUG_FLAG = True
+
+
+def debug_print(in_message, in_debug_flag=G_DEBUG_FLAG):
+    """Prints all debug messages depending on setting in in_debug_flag
+
+    :param in_message: string to print
+    :param in_debug_flag: true or false to print
+    """
+    if in_debug_flag: print(in_message)
+
+
 def export_csv(df):
     with io.StringIO() as buffer:
         df.to_csv(buffer, index=False, encoding='utf-8')
         return buffer.getvalue()
 
+
 EXPORTERS = {'dataframe.csv': export_csv}
+
 
 def get_with_default(in_conf, in_section, in_key, default=None):
     """
@@ -49,8 +65,7 @@ def get_with_default(in_conf, in_section, in_key, default=None):
         return return_val
 
 
-
-def get_login(in_file, in_ver, debug = False):
+def get_login(in_file, in_ver, debug=False):
     """
     Retrieve login from JSON file
 

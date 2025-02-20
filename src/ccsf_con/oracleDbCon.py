@@ -7,6 +7,7 @@ from pathlib import Path
 from cryptography.fernet import Fernet
 from codetiming import Timer
 from ccsf_con import get_login
+
 # Global variables
 DB_OCI_CONNECTIONS_FILE = '.DbConnections.json'
 DB_JSON_FILE_VER_SUPPORTED = "1.01"
@@ -124,6 +125,7 @@ class OracleCloudDB:
                 else:
                     print(f"Failed to connect after {retries} attempts.")
                     raise
+
     @Timer()
     def execute_sql(self, sql, params=None):
         """

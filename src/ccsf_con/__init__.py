@@ -9,6 +9,7 @@ import sys
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
+from .ProcessingError import ProcessingError
 
 # required imports
 from sqlalchemy import create_engine, text
@@ -58,9 +59,9 @@ def get_with_default(in_conf, in_section, in_key, default=None):
     try:
         return_val = in_conf.get(in_section, in_key)
     except configparser.NoOptionError:
-        print(f"No such option: {in_key}")
+        ProcessingError(f"No such option: {in_key}")
     except configparser.NoSectionError:
-        print(f"No such section: {in_section}")
+        ProcessingError(f"No such section: {in_section}")
     finally:
         return return_val
 

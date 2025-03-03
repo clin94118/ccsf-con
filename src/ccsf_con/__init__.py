@@ -65,39 +65,51 @@ def get_with_default(in_conf, in_section, in_key, default=None):
         return return_val
 
 
-def get_login(in_file, in_ver, debug=False):
+def get_login(in_file, in_ver, in_fileType='JSON'):
     """
     Retrieve login from JSON file
 
     Parameters:
     in_file (str): filename of login file
     in_ver (str): version matching required
-    debug (bool, optional): prints json file path
+    in_fileType (str): JSON or INI depending on file type required
     Returns:
-    list of dictionaries containing login details
+    JSON: list of dictionaries containing login details
+    INI: Configparser class reading ini file
 
     Raises:
     FileNotFoundError: The file is not found in current working directory or home/.logins directory
     ValueError: Version in file does not match requirement
     """
-    json_file_path = Path.cwd() / in_file
+    l_file_path = Path.cwd() / in_file
 
-    if not json_file_path.is_file():
-        json_file_path = Path.home() / '.logins' / in_file
+    if not l_file_path.is_file():
+        l_file_path = Path.home() / '.logins' / in_file
 
-    if not json_file_path.is_file():
+    if not l_file_path.is_file():
         raise FileNotFoundError(
             f"JSON file '{in_file}' not found in the current directory or home/.logins directory.")
     else:
         # Print the file path before opening it
-        if debug:
-            print(f"Using JSON file path: {json_file_path}")
+        debug_print(f"Using file file path: {l_file_path}")
 
-    with json_file_path.open('r') as json_file:
-        config = json.load(json_file)
+    config = {}
+    if in_fileType == 'JSON':
+        with l_file_path.open('r') as json_file:
+            config = json.load(json_file)
 
-    if config.get('version') != in_ver:
-        raise ValueError(f"Unsupported JSON version: {config.get('version')}. Expected version '{in_ver}'.")
+        if config.get('version') != in_ver:
+            raise ValueError(f"Unsupported JSON version: {config.get('version')}. Expected version '{in_ver}'.")
+    elif in_fileType == 'INI':
+        config = configparser.ConfigParser()
+        config_file_path = Path.cwd() / in_file
+
+        if not config_file_path.is_file():
+            config_file_path = Path.home() / ".logins" / in_file
+
+        config.read(config_file_path)
+    else:
+        config = None
 
     return config
 

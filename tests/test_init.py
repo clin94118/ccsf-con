@@ -69,13 +69,19 @@ def test_f_create_wString(my_df):
     assert wString == "('1', '2', '3', '4', '5', '6')"
 
 
-def test_get_login():
-    conns = get_login('.DbConnections.json', '1.01', True)
+def test_get_login_json():
+    conns = get_login('.DbConnections.json', '1.01')
     con_df = pd.DataFrame.from_dict(conns.get('connections'), orient="columns")
 
     l_filter = con_df["name"] == 'OCI_PPRD'
     assert len(con_df[l_filter]) > 0
 
+def test_get_login_ini():
+    conns = get_login('api.ini', '0.5', "INI")
+
+    service_account_email = get_with_default(conns, "GOOGLE", "service_account_email")
+
+    assert service_account_email == "ce_ansel.adams@mail.ccsf.edu"
 
 def test_get_with_default(config_parse):
     curVer = get_with_default(config_parse, "DEFAULT", "version")

@@ -29,16 +29,17 @@ def debug_print(in_message, in_debug_flag=G_DEBUG_FLAG):
     :param in_message: string to print
     :param in_debug_flag: true or false to print
     """
-    if in_debug_flag: print(in_message)
+    if in_debug_flag:
+        print(in_message)
 
 
 def export_csv(df):
     with io.StringIO() as buffer:
-        df.to_csv(buffer, index=False, encoding='utf-8')
+        df.to_csv(buffer, index=False, encoding="utf-8")
         return buffer.getvalue()
 
 
-EXPORTERS = {'dataframe.csv': export_csv}
+EXPORTERS = {"dataframe.csv": export_csv}
 
 
 def get_with_default(in_conf, in_section, in_key, default=None):
@@ -85,23 +86,26 @@ def get_login(in_file, in_ver, in_fileType='JSON'):
     l_file_path = Path.cwd() / in_file
 
     if not l_file_path.is_file():
-        l_file_path = Path.home() / '.logins' / in_file
+        l_file_path = Path.home() / ".logins" / in_file
 
     if not l_file_path.is_file():
         raise FileNotFoundError(
-            f"JSON file '{in_file}' not found in the current directory or home/.logins directory.")
+            f"JSON file '{in_file}' not found in the current directory or home/.logins directory."
+        )
     else:
         # Print the file path before opening it
         debug_print(f"Using file file path: {l_file_path}")
 
     config = {}
-    if in_fileType == 'JSON':
-        with l_file_path.open('r') as json_file:
+    if in_fileType == "JSON":
+        with l_file_path.open("r") as json_file:
             config = json.load(json_file)
 
-        if config.get('version') != in_ver:
-            raise ValueError(f"Unsupported JSON version: {config.get('version')}. Expected version '{in_ver}'.")
-    elif in_fileType == 'INI':
+        if config.get("version") != in_ver:
+            raise ValueError(
+                f"Unsupported JSON version: {config.get('version')}. Expected version '{in_ver}'."
+            )
+    elif in_fileType == "INI":
         config = configparser.ConfigParser()
         config_file_path = Path.cwd() / in_file
 
@@ -144,6 +148,6 @@ def f_split_df(in_df, in_nGrp):
     :return: list_df: list of dataframes
     """
     l_numReq = in_df.shape[0]
-    list_df = [in_df[i:i + in_nGrp] for i in range(0, l_numReq, in_nGrp)]
+    list_df = [in_df[i : i + in_nGrp] for i in range(0, l_numReq, in_nGrp)]
 
     return list_df

@@ -6,7 +6,7 @@ import pandas as pd
 from pathlib import Path
 from cryptography.fernet import Fernet
 from codetiming import Timer
-from ccsf_con import get_login
+from ccsf_con import get_login, ProcessingError
 
 # Global variables
 DB_OCI_CONNECTIONS_FILE = '.DbConnections.json'
@@ -90,7 +90,7 @@ class OracleCloudDB:
         conn_details = conn_df['info'].values[0]
 
         if not conn_details:
-            raise ValueError(f"Connection '{connection_name}' not found in {json_file_path}")
+            raise ValueError(f"Connection '{connection_name}' please check {DB_OCI_CONNECTIONS_FILE}")
 
         # Decrypt the password using the cryptographic key if available
         crytokey = conn_details.get('crytokey')
@@ -120,11 +120,10 @@ class OracleCloudDB:
                 return  # Exit the function if connection is successful
             except oracledb.DatabaseError as e:
                 if attempt < retries - 1:
-                    print(f"Error connecting to Oracle Cloud database: {e}. Retrying in {delay} seconds...")
+                    ProcessingError(f"Error connecting to Oracle Cloud database: {e}. Retrying in {delay} seconds...")
                     time.sleep(delay)
                 else:
-                    print(f"Failed to connect after {retries} attempts.")
-                    raise
+                    raise ProcessingError(f"Failed to connect after {retries} attempts.")
 
     @Timer()
     def execute_sql(self, sql, params=None):

@@ -10,7 +10,7 @@ TEST_NEW_OU = "/Students"
 
 @pytest.fixture
 def in_googlecon():
-    return_val = googleApiCon.googleApiCon()
+    return_val = googleApiCon.GoogleApiCon()
     return return_val
 
 
@@ -33,21 +33,30 @@ def test_get_user(in_googlecon):
 
     assert l_userFound["name"]["givenName"] == TEST_FNAME
 
-def test_change_user_password(in_googlecon):
+
+def test_get_last_login_date(in_googlecon):
+    assert in_googlecon.get_last_login_date(TEST_EMAIL) == "1970-01-01T00:00:00.000Z"
+
+
+def test_get_user_ouPath(in_googlecon):
+    l_ouPathFound = in_googlecon.get_user_ouPath(TEST_EMAIL)
+
+    assert l_ouPathFound == "/Prereg-Students"
+
+
+def test_update_user_password(in_googlecon):
     try:
-        in_googlecon.change_user_password(TEST_EMAIL, "JKLM5678")
+        in_googlecon.update_user_password(TEST_EMAIL, "JKLM5678")
     except Exception as e:
         assert False, f"'change_user_password' raised exception {e}'"
 
-def test_update_user_ou(in_googlecon):
+
+def test_update_user_ouPath(in_googlecon):
     try:
-        in_googlecon.update_user_ou(TEST_EMAIL, TEST_NEW_OU)
+        in_googlecon.update_user_ouPath(TEST_EMAIL, TEST_NEW_OU)
     except Exception as e:
         assert False, f"'update_user_ou()' raised exception {e}'"
 
-
-def test_get_last_login_date(in_googlecon):
-    assert in_googlecon.get_last_login_date(TEST_EMAIL) == '1970-01-01T00:00:00.000Z'
 
 def test_delete_user(in_googlecon):
     try:

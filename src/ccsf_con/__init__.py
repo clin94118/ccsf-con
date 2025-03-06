@@ -67,7 +67,7 @@ def get_with_default(in_conf, in_section, in_key, default=None):
         return return_val
 
 
-def get_login(in_file, in_ver, in_fileType='JSON'):
+def get_login(in_file, in_ver, in_fileType="JSON"):
     """
     Retrieve login from JSON file
 

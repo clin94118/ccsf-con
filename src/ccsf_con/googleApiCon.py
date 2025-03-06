@@ -13,7 +13,7 @@ STUDENTS_OUPATH = "/Students"
 NOREG_OUPATH = "/No-Reg"
 
 
-class googleApiCon:
+class GoogleApiCon:
     """
     A class to interact with the Google Admin Directory API using a service account.
 
@@ -30,14 +30,14 @@ class googleApiCon:
     Methods:
         authenticate:         Authenticates with the Google Admin API using the service account.
         list_users:           Retrieve list users in the domain.
-        get_user:             Retrieves details for a single user based on their email.
-        get_user_ou_path:     Retrieves the organizational unit path of a user.
-        get_last_login_date:  Retrieves the last login date of a user.
         create_user:          Creates a new user in the domain.
-        delete_user:          Deletes a user from the domain.
+        get_user:             Retrieves details for a single user based on their email.
+        get_user_ouPath:      Retrieves the organizational unit path of a user.
+        get_last_login_date:  Retrieves the last login date of a user.
         update_user_name:     Update the name of a user.
-        update_user_ou:       Update the organizational unit path for a user.
         update_user_password: Update the password of a user.
+        update_user_ouPath:   Update the organizational unit path for a user.
+        delete_user:          Deletes a user from the domain.
     """
 
     def __init__(
@@ -143,7 +143,7 @@ class googleApiCon:
         first_name,
         last_name,
         org_unit_path=PREREG_OU,
-        max_wait_time=5,
+        max_wait_time=5
     ):
         """
         Creates a new user in the domain and waits for the user to be successfully created.
@@ -255,7 +255,134 @@ class googleApiCon:
                 "An unknown error occurred during user retrieval", reason=str(e)
             )
 
-    def update_user_ou(self, email, new_ou):
+    def get_user_ouPath(self, email):
+        """
+        Retrieves the organizational unit (OU) path of a user.
+
+        Args:
+            email (str): The email address of the user.
+
+        Returns:
+            str: The OU path of the user.
+
+        Raises:
+            GoogleProcessingError: If there is an error during the retrieval process.
+        """
+
+        debug_print(f"\nAttempting to get OU path for user {email} \n")
+
+        try:
+            user_details = self.service.users().get(userKey=email).execute()
+            ou_path = user_details.get("orgUnitPath")
+            debug_print(f"    OU path for user {email}: {ou_path}")
+            return ou_path
+
+        except HttpError as e:
+            raise ProcessingError(
+                "Error retrieving user OU path",
+                status_code=e.resp.status,
+                reason=e.reason,
+            )
+        except Exception as e:
+            raise ProcessingError(
+                "An unknown error occurred during OU path retrieval", reason=str(e)
+            )
+
+    def get_last_login_date(self, email):
+        """
+        Retrieves the last login date of a user.
+
+        Args:
+            email (str): The email address of the user.
+
+        Returns:
+            str: The last login date of the user in ISO 8601 format.
+
+        Raises:
+            GoogleProcessingError: If there is an error during the retrieval process.
+        """
+
+        debug_print(f"\nAttempting to get last login date for user {email} \n")
+
+        try:
+            user_details = self.service.users().get(userKey=email).execute()
+            last_login_time = user_details.get("lastLoginTime")
+            debug_print(f"    Last login time for user {email}: {last_login_time}")
+            return last_login_time
+
+        except HttpError as e:
+            raise ProcessingError(
+                "Error retrieving user last login date",
+                status_code=e.resp.status,
+                reason=e.reason,
+            )
+        except Exception as e:
+            raise ProcessingError(
+                "An unknown error occurred during last login retrieval", reason=str(e)
+            )
+
+    def update_user_name(self, email, new_given_name, new_family_name):
+        """
+        Changes the name of a user.
+
+        Args:
+            email (str): The email address of the user whose name is being changed.
+            new_given_name (str): The new given name to set.
+            new_family_name (str): The new family name to set.
+
+        Raises:
+            GoogleProcessingError: If there is an error during the name change process.
+        """
+
+        debug_print(f"\nAttempting to change name for user {email} \n")
+
+        try:
+            user_data = {
+                "name": {"givenName": new_given_name, "familyName": new_family_name}
+            }
+            self.service.users().update(userKey=email, body=user_data).execute()
+            debug_print(f"    Name for user {email} changed successfully.")
+
+        except HttpError as e:
+            raise ProcessingError(
+                "Error changing user name", status_code=e.resp.status, reason=e.reason
+            )
+        except Exception as e:
+            raise ProcessingError(
+                "An unknown error occurred during name change", reason=str(e)
+            )
+
+    def update_user_password(self, email, new_password):
+        """
+        Changes the password of a user.
+
+        Args:
+            email (str): The email address of the user whose password is being changed.
+            new_password (str): The new password to set.
+
+        Raises:
+            GoogleProcessingError: If there is an error during the password change process.
+        """
+
+        debug_print(f"\nAttempting to change password for user {email} \n")
+
+        try:
+            user_data = {"password": new_password}
+            self.service.users().update(userKey=email, body=user_data).execute()
+            debug_print(f"    Password for user {email} changed successfully.")
+
+        except HttpError as e:
+            raise ProcessingError(
+                "Error changing user password",
+                status_code=e.resp.status,
+                reason=e.reason,
+            )
+        except Exception as e:
+            raise ProcessingError(
+                "An unknown error occurred during password change", reason=str(e)
+            )
+
+    def update_user_ouPath(self, email, new_ou):
         """
         Updates the organizational unit (OU) path for a specific user.
 
@@ -344,118 +471,3 @@ class googleApiCon:
             raise ProcessingError(
                 "An unknown error occurred during user deletion", reason=str(e)
             )
-
-    def change_user_password(self, email, new_password):
-        """
-        Changes the password of a user.
-
-        Args:
-            email (str): The email address of the user whose password is being changed.
-            new_password (str): The new password to set.
-
-        Raises:
-            GoogleProcessingError: If there is an error during the password change process.
-        """
-
-        debug_print(f"\nAttempting to change password for user {email} \n")
-
-        try:
-            user_data = {"password": new_password}
-            self.service.users().update(userKey=email, body=user_data).execute()
-            debug_print(f"    Password for user {email} changed successfully.")
-
-        except HttpError as e:
-            raise ProcessingError(
-                "Error changing user password",
-                status_code=e.resp.status,
-                reason=e.reason,
-            )
-        except Exception as e:
-            raise ProcessingError(
-                "An unknown error occurred during password change", reason=str(e)
-            )
-
-    def change_user_name(self, email, new_given_name, new_family_name):
-        """
-        Changes the name of a user.
-
-        Args:
-            email (str): The email address of the user whose name is being changed.
-            new_given_name (str): The new given name to set.
-            new_family_name (str): The new family name to set.
-
-        Raises:
-            GoogleProcessingError: If there is an error during the name change process.
-        """
-
-        debug_print(f"\nAttempting to change name for user {email} \n")
-
-        try:
-            user_data = {
-                "name": {
-                    "givenName": new_given_name,
-                    "familyName": new_family_name
-                }
-            }
-            self.service.users().update(userKey=email, body=user_data).execute()
-            debug_print(f"    Name for user {email} changed successfully.")
-
-        except HttpError as e:
-            raise ProcessingError("Error changing user name", status_code=e.resp.status, reason=e.reason)
-        except Exception as e:
-            raise ProcessingError("An unknown error occurred during name change", reason=str(e))
-
-    def get_user_ou_path(self, email):
-        """
-        Retrieves the organizational unit (OU) path of a user.
-
-        Args:
-            email (str): The email address of the user.
-
-        Returns:
-            str: The OU path of the user.
-
-        Raises:
-            GoogleProcessingError: If there is an error during the retrieval process.
-        """
-
-        debug_print(f"\nAttempting to get OU path for user {email} \n")
-
-        try:
-            user_details = self.service.users().get(userKey=email).execute()
-            ou_path = user_details.get("orgUnitPath")
-            debug_print(f"    OU path for user {email}: {ou_path}")
-            return ou_path
-
-        except HttpError as e:
-            raise ProcessingError("Error retrieving user OU path", status_code=e.resp.status, reason=e.reason)
-        except Exception as e:
-            raise ProcessingError("An unknown error occurred during OU path retrieval", reason=str(e))
-
-    def get_last_login_date(self, email):
-        """
-        Retrieves the last login date of a user.
-
-        Args:
-            email (str): The email address of the user.
-
-        Returns:
-            str: The last login date of the user in ISO 8601 format.
-
-        Raises:
-            GoogleProcessingError: If there is an error during the retrieval process.
-        """
-
-        debug_print(f"\nAttempting to get last login date for user {email} \n")
-
-        try:
-            user_details = self.service.users().get(userKey=email).execute()
-            last_login_time = user_details.get("lastLoginTime")
-            debug_print(f"    Last login time for user {email}: {last_login_time}")
-            return last_login_time
-
-        except HttpError as e:
-            raise ProcessingError("Error retrieving user last login date", status_code=e.resp.status,
-                                        reason=e.reason)
-        except Exception as e:
-            raise ProcessingError("An unknown error occurred during last login retrieval", reason=str(e))

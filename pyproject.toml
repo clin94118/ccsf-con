@@ -30,7 +30,21 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["oracledb", "pandas", "pytest",  "requests", "sqlalchemy", "codetiming", "configparser"]
+dependencies = [
+    "oracledb==2.3.0",
+    "pandas==2.2.2",
+    "pytest==8.3.2",
+    "requests==2.32.3",
+    "sqlalchemy==2.0.32",
+    "codetiming==1.4.0",
+    "configparser==5.2.0",
+    "google-api-python-client==2.161.0",
+    "google-auth-httplib2==0.2.0",
+    "google-auth-oauthlib==1.2.1",
+]
+
+
+
 
 [project.urls]
 Documentation = "https://github.com/clin94118/ccsf-con#readme"

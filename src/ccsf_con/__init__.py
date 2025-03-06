@@ -20,7 +20,7 @@ from cryptography.fernet import Fernet
 import configparser
 
 # Global debug flag (turn debug messages on/off)
-G_DEBUG_FLAG = True
+G_DEBUG_FLAG = False
 
 
 def debug_print(in_message, in_debug_flag=G_DEBUG_FLAG):

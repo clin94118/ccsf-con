@@ -40,9 +40,7 @@ class GoogleApiCon:
         delete_user:          Deletes a user from the domain.
     """
 
-    def __init__(
-        self,
-    ):
+    def __init__(self):
         conns = get_login(API_CONNECTIONS_FILE, API_FILE_VER_SUPPORTED, "INI")
 
         self.service_account_file = get_with_default(
@@ -143,7 +141,7 @@ class GoogleApiCon:
         first_name,
         last_name,
         org_unit_path=PREREG_OU,
-        max_wait_time=5
+        max_wait_time=5,
     ):
         """
         Creates a new user in the domain and waits for the user to be successfully created.
